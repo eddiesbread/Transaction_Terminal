@@ -21,22 +21,26 @@ def user_input_from_date():
     from_date_input = input(' Enter from date (YYYY-MM-DD): ').strip()
     if not from_date_input:
         clear_terminal()
-        return False
+        return None
     try:
-        return from_date_input.strftime(from_date_input, '%Y-%m-%d')
+        from_date = datetime.strptime(from_date_input, '%Y-%m-%d').date()
+        return from_date
     except ValueError:
         clear_terminal()
+        return False
 
 def user_input_to_date():
     to_date_input = input(' Enter to date (YYYY-MM-DD): ').strip()
     if not to_date_input:
         clear_terminal()
-        return False
+        return None
     try:
-        return to_date_input.strftime(to_date_input, '%Y-%m-%d')
+        return datetime.strptime(to_date_input, '%Y-%m-%d').date()
     except ValueError:
-        return False
-
+        clear_terminal()
+        return None
+            
+     
 class InputManager:
     def __init__(self):
         pass
@@ -131,31 +135,17 @@ class InputManager:
             else:
                 clear_terminal()
                 return False 
-            
-    def T_Pending_transaction(self, account_type):
+    
+    def T_Transaction_confirm(self, account_type):
         while True:
-            Pending_transaction_Input = input('Pending Transaction? [Y/N]: ').strip().upper()
+            Pending_transaction_Input = input('Confirm Transaction [Y/N]: ').strip().upper()
             if Pending_transaction_Input == 'Y':
                 clear_terminal()
                 return True
             elif Pending_transaction_Input == 'N':
                 clear_terminal()
-                return "False"
+                return False
             
             else:
                 clear_terminal()
                 return False
-    
-    # def T_Transaction_confirm(self, account_type):
-    #     while True:
-    #         Pending_transaction_Input = input('Confirm Transaction [Y/N]: ').strip().upper()
-    #         if Pending_transaction_Input == 'Y':
-    #             clear_terminal()
-    #             return True
-    #         elif Pending_transaction_Input == 'N':
-    #             clear_terminal()
-    #             return "False"
-            
-    #         else:
-    #             clear_terminal()
-    #             return False

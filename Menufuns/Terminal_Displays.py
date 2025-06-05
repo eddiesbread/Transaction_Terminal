@@ -2,6 +2,7 @@
 import time 
 import sqlite3 
 import pandas as pd
+import os
 from datetime import datetime
 from Menufuns.Secondary_Functions import clear_terminal, option_input_function, user_input_from_date, user_input_to_date, InputManager
 from SQL_Functions.SQL_Statements import YTD_credits,MTD_credits,OAT_credits, YTD_debits, MTD_debits, OAT_debits, YTD_savings, MTD_savings, OAT_savings, Custom_credits, Custom_debit, Custom_savings
@@ -16,7 +17,7 @@ class MenuManger:
             print_terminal_header('MAIN MENU')
             print('    Select from the following options: ')
             print()
-            print('    [1] Enter Transactions **DO NOT USE - IN PROGRESS**')
+            print('    [1] Enter Transactions')
             print('    [2] Analysis Center')
             print('    [3] Exit Program')
             print()
@@ -28,9 +29,11 @@ class MenuManger:
                 clear_terminal()
                 transaction = Transaction(None, None, 0.0, 0.0, 0.0, None, None, None, None)
                 transaction.Transaction_account_select()
+                break
             elif option_input == 2:
                 clear_terminal()
                 self.sec_menu()
+                break
             elif option_input == 3:
                 cur.close()
                 clear_terminal()
@@ -57,7 +60,7 @@ class MenuManger:
                 break
             elif option_input == 4:
                 clear_terminal()
-                return
+                self.main_menu()
             else:
                 clear_terminal()
 
@@ -96,8 +99,9 @@ class MenuManger:
                     from_date, to_date = date_range
                     clear_terminal()
                     print_terminal_header('Reporting Manager')
+                    print()
                     report_manager = SQLReportingManager(account_types)
-                    report_manager.run_report('Custom', (from_date,to_date))
+                    report_manager.run_report('Custom', (from_date, to_date))
                     print('═══════════════════════════════════════════════════')
                     input('Press enter to return to menu...')
                     clear_terminal()                
@@ -147,6 +151,7 @@ class DateRangeSelector:
     def From_Date_Menu(self):
         while True:
             print_terminal_header(f'{self.account_types.capitalize()} Reporting Manager')
+            print()
             print('    Enter From Date: ')        
             print()
             print('═══════════════════════════════════════════════════')
@@ -162,41 +167,49 @@ class DateRangeSelector:
     def To_Date_Menu(self,from_date):
         while True:
             print_terminal_header(f'{self.account_types.capitalize()} Reporting Manager')
+            print()
             print(f'   To date entered: {from_date}')         
             print()
             print('═══════════════════════════════════════════════════')
             print()
             to_date = user_input_to_date()
-            print()
 
+            if not to_date:
+                clear_terminal()
+                continue
             if to_date < from_date:
-                print(f'{to_date} must be after {from_date}')
+                print(f' {to_date.strftime('%Y-%m-%d')} must be after {from_date.strftime('%Y-%m-%d')}')
                 time.sleep(1.5)
                 clear_terminal()
                 continue
-            
             else:
                 clear_terminal()
-                print_terminal_header(f'{self.account_types.capitalize()} Reporting Manager')
-                print(f'   Custom Range: {from_date} to {to_date}')           
-                print()
-                print('   Do you wish to proceed?:')
-                print()
-                print('   [Y] Yes')
-                print('   [N] No')
-                print()
-                print('═══════════════════════════════════════════════════')
-                print()
-                proceed = input('   Enter option: ').strip().upper()
-                if proceed == 'Y':
-                    clear_terminal()
+                if self.Date_Confirmnation(from_date, to_date):
                     return to_date
-                elif proceed == 'N':
-                    clear_terminal()
-                    self.From_Date_Menu()
-                    continue
-                else:
-                    continue
+
+    def Date_Confirmnation(self, from_date, to_date):
+        while True:
+            print_terminal_header(f'{self.account_types.capitalize()} Reporting Manager')
+            print()
+            print(f'   Custom Range: {from_date} to {to_date}')           
+            print()
+            print('   Do you wish to proceed?:')
+            print()
+            print('   [Y] Yes')
+            print('   [N] No')
+            print()
+            print('═══════════════════════════════════════════════════')
+            print()
+            proceed = input('   Enter option: ').strip().upper()
+            if proceed == 'Y':
+                clear_terminal()
+                return True
+            elif proceed == 'N':
+                clear_terminal()
+                self.From_Date_Menu()
+                continue
+            else:
+                continue
 
 #Terminal Header
 def print_terminal_header(title):
@@ -206,15 +219,15 @@ def print_terminal_header(title):
 
 #Transaction Account
 class Transaction:
-    def __init__(self, Date, Description, Debit, Credit, Amount, Sub_category, Category, Pending_Transaction, Account_type):
+    def __init__(self, Date, Description, Debit, Credit, Amount, Sub_category, Category, Transaction_Type, Account_type):
         self.Date = Date
         self.Description = Description
         self.Debit = Debit
         self.Credit = Credit
         self.Amount = Amount
         self.Sub_category = Sub_category
-        self.Category  = Category
-        self.Pending_transaction = Pending_Transaction
+        self.Category = Category
+        self.Transaction_Type = Transaction_Type
         self.Account_type = Account_type
 
     def Transaction_account_select(self):
@@ -240,7 +253,7 @@ class Transaction:
                 break
             if option_input == 3:
                 clear_terminal()
-                MenuManger.main_menu(self)
+                MenuManger().main_menu()
                 break
             else:
                 clear_terminal()
@@ -254,8 +267,7 @@ class Transaction:
             print('    Description: ')
             print('    Amount: $')
             print('    Category: ')
-            print('    Sub_category: ')
-            print('    Pending_Transaction: ')             
+            print('    Sub_category: ')           
             print()
             print('═══════════════════════════════════════════════════') 
             print()
@@ -275,8 +287,7 @@ class Transaction:
                 print('    Description: ')
                 print('    Amount: $')
                 print('    Category: ')
-                print('    Sub_category: ')
-                print('    Pending_Transaction: ')  
+                print('    Sub_category: ') 
                 print()
                 print('═══════════════════════════════════════════════════') 
                 print()
@@ -300,18 +311,18 @@ class Transaction:
                 print(f'    Description: {self.Description}')
                 print('    Amount: $')
                 print('    Category: ')
-                print('    Sub_category: ')
-                print('    Pending_Transaction: ')  
+                print('    Sub_category: ') 
                 print()
                 print('═══════════════════════════════════════════════════') 
                 print() 
                 input_manager = InputManager()
                 self.Debit = input_manager.T_Debit(account_type) 
                 self.Credit = 0.0
+                self.Transaction_Type = 'Expense'
                 if self.Debit:
                     self.Amount = self.Credit - self.Debit 
                     clear_terminal()
-                    self.Create_Transaction_Category(self,account_type)
+                    self.Create_Transaction_Category(account_type)
                     break
 
     def Create_Transaction_Credit(self,account_type):
@@ -323,14 +334,14 @@ class Transaction:
                 print(f'    Description: {self.Description}')
                 print('    Amount: $')
                 print('    Category: ')
-                print('    Sub_category: ')
-                print('    Pending_Transaction: ')  
+                print('    Sub_category: ') 
                 print()
                 print('═══════════════════════════════════════════════════') 
                 print()
                 input_manager = InputManager()
                 self.Credit = input_manager.T_Credit(account_type)
                 self.Debit = 0.0
+                self.Transaction_Type = 'Income'
                 if self.Credit:
                     clear_terminal()
                     self.Amount = self.Credit - self.Debit
@@ -350,7 +361,6 @@ class Transaction:
                     print(f'    Amount: ${self.Debit}')
                 print('    Category: ')
                 print('    Sub_category: ')
-                print('    Pending_Transaction: ')  
                 print()
                 print('═══════════════════════════════════════════════════') 
                 print()
@@ -373,7 +383,6 @@ class Transaction:
                     print(f'    Amount: ${self.Debit}')
                 print(f'    Category: {self.Category}')
                 print(f'    Sub_category: ')
-                print('    Pending_Transaction: ')  
                 print()
                 print('═══════════════════════════════════════════════════') 
                 print()
@@ -381,51 +390,76 @@ class Transaction:
                 self.Sub_category = input_manager.T_Sub_category(account_type)
                 if self.Sub_category:
                     clear_terminal()
-                    self.Create_Transaction_Pending_Transaction(account_type)
-
-    def Create_Transaction_Pending_Transaction(self,account_type):
-            while True:
-                self.Account_type = account_type
-                print_terminal_header(f'Account: {account_type.capitalize()}')
-                print()
-                print(f'    Date of Transcation (YYYY-MM-DD): {self.Date}')
-                print(f'    Description: {self.Description}')
-                if account_type == 'credit':
-                    print(f'    Amount: ${self.Credit}')
-                else:
-                    print(f'    Amount: ${self.Debit}')
-                print(f'    Category: {self.Category}')
-                print(f'    Sub_category: {self.Sub_category}')
-                print('    Pending_Transaction: ')  
-                print()
-                print('═══════════════════════════════════════════════════') 
-                print()
-                input_manager = InputManager()
-                self.Pending_transaction = input_manager.T_Pending_transaction(account_type)
-                if self.Pending_transaction:
-                    clear_terminal()
                     self.Create_Transaction_Confirm(account_type)
-                    break
 
     def Create_Transaction_Confirm(self,account_type):
-            while True:
-                self.Account_type = account_type
-                print_terminal_header(f'Account: {account_type.capitalize()}')
-                print()
-                print(f'    Date of Transcation (YYYY-MM-DD): {self.Date}')
-                print(f'    Description: {self.Description}')
-                if account_type == 'credit':
-                    print(f'    Amount: ${self.Credit}')
-                else:
-                    print(f'    Amount: ${self.Debit}')
-                print(f'    Category: {self.Category}')
-                print(f'    Sub_category: {self.Sub_category}')
-                print(f'    Pending_Transaction: {self.Pending_transaction}')  
-                print()
-                print('═══════════════════════════════════════════════════') 
-                print()
-                input_manager = InputManager()
-                self.Pending_transaction = input_manager.T_Pending_transaction(account_type)
-                if self.Pending_transaction:
-                    clear_terminal()
-                    break    
+        while True:
+            self.Account_type = account_type
+            print_terminal_header(f'Account: {account_type.capitalize()}')
+            print()
+            print(f'    Date of Transcation (YYYY-MM-DD): {self.Date}')
+            print(f'    Description: {self.Description}')
+            if account_type == 'credit':
+                print(f'    Amount: ${self.Credit}')
+            else:
+                print(f'    Amount: ${self.Debit}')
+            print(f'    Category: {self.Category}')
+            print(f'    Sub_category: {self.Sub_category}') 
+            print()
+            print('═══════════════════════════════════════════════════') 
+            print()
+            
+            confirm = input('Confirm Transaction [Y/N]: ').strip().upper()
+            if confirm == 'Y':
+                clear_terminal()
+                self.Save_to_csv()
+                break
+            elif confirm == 'N':
+                clear_terminal()
+                break
+            else:
+                clear_terminal()
+
+    def Save_to_csv(self, filename=r'F:\Terminal Project\Database\finances_Updated.csv'):
+        if not os.path.isfile(filename):
+            print_terminal_header(f'Account: {self.Account_type.capitalize()}')
+            print()
+            print(f"CSV file '{filename}' does not exist. Transaction not saved.")
+            print()
+            print('═══════════════════════════════════════════════════')
+            input('Press Enter to return to menu...')
+            clear_terminal()
+            MenuManger().main_menu()
+            return
+        
+        if isinstance(self.Date, datetime):
+            date_str = self.Date.strftime('%d/%m/%Y 0:00')
+        else:
+            try:
+                dt = datetime.strptime(self.Date, '%Y-%m-%d')
+                date_str = dt.strftime('%d/%m/%Y 0:00')
+            except Exception:
+                date_str = self.Date   
+
+        data = {
+            'Date': [date_str],  # <<<<< use formatted date here
+            'Description': [self.Description],
+            'Debit': [self.Debit],
+            'Credit': [self.Credit],
+            'Amount': [self.Amount],
+            'Sub_category': [self.Sub_category],
+            'Category': [self.Category],
+            'Transaction_Type': [self.Transaction_Type],
+        }
+        df = pd.DataFrame(data)
+        df.to_csv(filename, mode='a', index=False, header=False)
+
+        print_terminal_header(f'Account: {self.Account_type.capitalize()}')
+        print()
+        print('\nTransaction saved successfully.')
+        print()
+        print('═══════════════════════════════════════════════════')
+        print()
+        input('Press Enter to return to menu...')
+        clear_terminal()
+        MenuManger().main_menu()
