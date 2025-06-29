@@ -20,8 +20,8 @@
 
 ###  Backend
 - Dual data storage using:
-  - SQLite (`db.sqlite3`)
-  - CSV (`finances_Updated.csv`)
+  - SQLite 
+  - CSV
 - Modular architecture with SQL query logic separated in `SQL_Functions/`
 
 ---
