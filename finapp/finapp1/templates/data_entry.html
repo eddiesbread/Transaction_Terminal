@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Finance App</title>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'finapp1/Data_entry.css' %}">
+        <link rel="stylesheet" href="{% static 'finapp1/sidebar.css' %}">
+    </head>
+    <body>
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div>
+                <img class="app-logo" src="{% static 'finapp1/Logo1.png' %}" alt="Logo">
+            </div>
+            
+            <div class="logos">
+                <a href="/Overview/">
+                    <button class="icon-button">
+                        <img src="{% static 'finapp1/dashboard-panel.png' %}" alt="Dashboard">
+                    </button>
+                </a>
+                <a href="/Data_entry/">
+                    <button class="icon-button">
+                        <img src="{% static 'finapp1/form.png' %}" alt="Form">
+                    </button>
+                </a>
+                <a href="/Database/">
+                    <button class="icon-button">
+                        <img src="{% static 'finapp1/database.png' %}" alt="Database">
+                    </button>
+                </a>
+            </div>
+
+            <!-- Sign-Out Button -->
+            <div class="signout-btn-container">
+                <a href="">
+                    <button class="signout-btn">
+                        <img src="{% static 'finapp1/sign-out-alt.png' %}" alt="Sign Out">
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <form method="POST" action="/Data_entry/">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="entry-date">Date:</label>
+                    <input type="date" id="entry-date" name="entry_date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="amount">Amount:</label>
+                    <input type="number" id="amount" name="amount" step="0.01" placeholder="Enter amount" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" rows="4" placeholder="Enter a description" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="transaction-type">Transaction Type:</label>
+                    <select id="transaction-type" name="transaction_type" required>
+                        <option value="" disabled selected>Select Type</option>
+                        <option value="Credit">Credit</option>
+                        <option value="Debit">Debit</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category:</label>
+                    <select id="category" name="category" required>
+                        <option value="" disabled selected>Select Category</option>
+                        <option value="Salary">Salary</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Eating">Eating</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Groceries">Groceries</option>
+                        <option value="Undef">Undef</option>
+                        <option value="Investments">Investments</option>
+                        <option value="Business">Business</option>
+                        <option value="Membership">Membership</option>
+                        <option value="Rent">Rent</option>
+                        <option value="Reimbursements">Reimbursements</option>
+                        <option value="Dividends">Dividends</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="subcategory">Sub-Category:</label>
+                    <select id="subcategory" name="subcategory" required>
+                        <option value="" disabled selected>Select Sub-Category</option>
+                        <option value="Salary">Salary</option>
+                        <option value="Dividends">Dividends</option>
+                        <option value="Other Incomes">Other Incomes</option>
+                        <option value="Car Installments">Car Installments</option>
+                        <option value="Fuel">Fuel</option>
+                        <option value="Public Transport">Public Transport</option>
+                        <option value="Work Transport">Work Transport</option>
+                        <option value="Café">Café</option>
+                        <option value="Eating Out">Eating Out</option>
+                        <option value="Bar">Bar</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Fees">Fees</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Investments">Investments</option>
+                        <option value="Memberships">Memberships</option>
+                        <option value="Undef">Undef</option>
+                        <option value="Business">Business</option>
+                        <option value="Rent">Rent</option>
+                        <option value="Phone Bill">Phone Bill</option>
+                        <option value="Reimbursements">Reimbursements</option>
+                    </select>
+                </div>
+
+                <div class="form-group submit-btn-container">
+                    <button type="submit" class="submit-btn">Submit</button>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>
