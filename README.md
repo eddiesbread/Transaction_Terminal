@@ -6,7 +6,7 @@
 
 ##  Features
 
-### 🖥 Terminal Interface
+### Terminal Interface
 - Add transactions (credit, debit, savings) via command line
 - Date filtering (YTD, MTD, custom range)
 - Quick statistics and summaries
