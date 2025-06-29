@@ -10,10 +10,6 @@ cur.execute(create_table)
 #Insert data from CSV into Database
 df.to_sql('finances', conn, if_exists='replace', index=False)
 
-# #Getting first year in DB
-# df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
-# df_first_year = df['Date'].min().year
-
 
 #Credits
 def YTD_credits():

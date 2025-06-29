@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'finapp1/overview.css' %}">
+    <link rel="stylesheet" href="{% static 'finapp1/sidebar.css' %}">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div>
+            <img class="app-logo" src="{% static 'finapp1/Logo1.png' %}" alt="Logo">
+        </div>
+        <div class="logos">
+            <a href="/Overview/">
+                <button class="icon-button">
+                    <img src="{% static 'finapp1/dashboard-panel.png' %}" alt="Dashboard">
+                </button>
+            </a>
+            <a href="/Data_entry/">
+                <button class="icon-button">
+                    <img src="{% static 'finapp1/form.png' %}" alt="Form">
+                </button>
+            </a>
+            <a href="/Database/">
+                <button class="icon-button">
+                    <img src="{% static 'finapp1/database.png' %}" alt="Database">
+                </button>
+            </a>
+        </div>
+        <div class="signout-btn-container">
+            <a href="/logout/">
+                <button class="signout-btn">
+                    <img src="{% static 'finapp1/sign-out-alt.png' %}" alt="Sign Out">
+                </button>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1>Welcome back,</h1>
+        <p>Here's an overview of your finances.</p>
+
+        <!-- Year Selector -->
+        <div class="year-selector">
+            <form method="get">
+                <label for="year">Select Year:</label>
+                <select name="year" id="year" onchange="this.form.submit()">
+                    {% for year in years %}
+                        <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <!-- Financial Summary -->
+        <div class="summary">
+            <div class="summary-card">
+                <h3>Total Income</h3>
+                <p>{{ total_income }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Total Expenses</h3>
+                <p>{{ total_expenses }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Savings</h3>
+                <p>{{ savings }}</p>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="transactions">
+            <h3>Recent Transactions</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tx in recent_transactions %}
+                        <tr>
+                            <td>{{ tx.date }}</td>
+                            <td>{{ tx.description }}</td>
+                            <td>{{ tx.amount }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

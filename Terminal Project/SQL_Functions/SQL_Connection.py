@@ -4,7 +4,7 @@ from datetime import time as dt
 import time 
 
 #Connection to database
-df = pd.read_csv('F:\Terminal Project\Database/finances_Updated.csv', encoding='latin1')
+df = pd.read_csv(r'F:\Terminal Project\Database\finances_Updated.csv', encoding='latin1')
 conn = sqlite3.connect('finances.db')
 cur = conn.cursor()
 
